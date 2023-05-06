@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static("./public/"));
+// app.use(express.urlencoded({ extended: false })); // to send data from form
+// app.use(express.static("./public/"));
 let message = "";
 
 app.post("/register", (req, res) => {
