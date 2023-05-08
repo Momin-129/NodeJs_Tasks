@@ -1,17 +1,18 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
+app.use(validateFunction);
 // app.use(express.urlencoded({ extended: false })); // to send data from form
 // app.use(express.static("./public/"));
 
-let errorMessage = {};
-
-app.post("/register", (req, res) => {
+function validateFunction(req, res, next) {
+  let errorMessage = {};
   let regex = new RegExp(
     /^([a-zA-z0-9_\.\-])+\@(([a-zA-z0-9])+\.)+([a-zA-z0-9]{2,4})+$/g
   );
   const { name, email, contact, dob } = req.body;
-  console.log(name.length);
+
+  console.log("Name Lenght", name.length);
   if (name.length == 0) {
     errorMessage.name = "Name Field Can't be empty";
   }
@@ -28,14 +29,20 @@ app.post("/register", (req, res) => {
     errorMessage.email = "Email Invalid";
   }
 
-  if (errorMessage.name && errorMessage.contact && errorMessage.email) {
+  if (errorMessage.name || errorMessage.contact || errorMessage.email) {
     errorMessage.result = "Registration Unsuccessfull";
   } else {
     errorMessage.result = "Registration Successfull.";
   }
 
-  res.json(errorMessage);
-  // errorMessage = {};
-  //res.json(req.body);
+  req.Validator = errorMessage;
+  next();
+}
+
+app.post("/register", (req, res) => {
+  const { name, email, contact, result } = req.Validator;
+  res.send({ name, email, contact, result });
+  res.end();
+  // res.json(errorMessage);
 });
 app.listen(3000, () => console.log("Register User"));
